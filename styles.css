@@ -350,3 +350,20 @@ canvas.sparkline { width: 100%; height: 54px; display: block; }
   canvas.chart { height: 240px; }
   canvas.chart.sm { height: 150px; }
 }
+
+/* ═══ 深度文章页：数据表格 ═══ */
+.data-table-wrap { overflow-x: auto; margin: 0.9em 0 1.2em; border: 1px solid var(--border); border-radius: 10px; }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--card); }
+.data-table caption { text-align: left; font-weight: 700; padding: 0.7em 0.9em; border-bottom: 1px solid var(--border); }
+.data-table th, .data-table td { padding: 0.55em 0.8em; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.data-table th:first-child, .data-table td:first-child { text-align: left; }
+.data-table thead th { background: var(--card-hover); font-weight: 700; }
+.data-table tbody tr:last-child th, .data-table tbody tr:last-child td { border-bottom: none; }
+.data-table .src-note { font-size: 0.78rem; opacity: 0.75; }
+.article-meta { color: var(--muted, #8a94a6); font-size: 0.85rem; margin-top: 0.4em; }
+.article-meta a { color: inherit; }
+.qa { border-left: 3px solid var(--border); padding: 0.2em 0 0.2em 1em; margin: 1em 0; }
+.qa .q { font-weight: 700; }
+.qa .a { margin-top: 0.3em; }
+.tag-warn { display: inline-block; background: #fff3cd; color: #8a6d1a; border-radius: 6px; padding: 0 0.5em; font-size: 0.82em; font-weight: 700; }
+:root[data-theme="dark"] .tag-warn { background: #4a3d12; color: #ffd97a; }
