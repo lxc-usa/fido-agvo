@@ -122,6 +122,9 @@ a:hover { text-decoration: underline; }
 .nav a { color: var(--muted); }
 .nav a:hover { color: var(--text); text-decoration: none; }
 
+/* 汉堡菜单按钮：桌面端隐藏 */
+.menu-toggle { display: none; }
+
 /* ---------- 通用区块 ---------- */
 main { padding: 26px 0 40px; }
 section { margin-bottom: 36px; }
@@ -339,13 +342,29 @@ canvas.sparkline { width: 100%; height: 54px; display: block; }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 640px) {
-  /* 顶栏：小屏幕改双行，第一行品牌、第二行导航 */
-  .site-header .wrap { flex-wrap: wrap; row-gap: 8px; padding-top: 10px; padding-bottom: 10px; }
-  .brand { gap: 10px; min-width: 0; }
+  /* 顶栏：小屏幕第一行只放品牌 + 汉堡按钮，导航折叠为下拉菜单 */
+  .site-header .wrap { flex-wrap: wrap; row-gap: 0; padding-top: 10px; padding-bottom: 10px; }
+  .brand { gap: 10px; min-width: 0; flex: 1 1 auto; }
   .ticker-badge { font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; }
   .brand h1 { font-size: 1.05rem; letter-spacing: 1px; white-space: nowrap; }
   .subtitle { display: none; }
-  .nav { flex-basis: 100%; gap: 18px; font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 8px; }
+  .menu-toggle {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--card); color: var(--text); cursor: pointer; padding: 0;
+  }
+  .menu-toggle:active { background: var(--card-hover); }
+  .menu-toggle svg { width: 20px; height: 20px; display: block; }
+  .menu-toggle .icon-close { display: none; }
+  .site-header.nav-open .menu-toggle .icon-menu { display: none; }
+  .site-header.nav-open .menu-toggle .icon-close { display: block; }
+  .nav {
+    display: none; flex: 1 1 100%; flex-direction: column; gap: 0;
+    border-top: 1px solid var(--border); margin-top: 10px; padding-top: 4px;
+  }
+  .site-header.nav-open .nav { display: flex; }
+  .nav a { padding: 10px 4px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .nav a:last-child { border-bottom: none; }
   .price { font-size: 1.8rem; }
   .brief-card, .brief-section, .brief-hero { padding: 16px; }
   .archive-card { flex-wrap: wrap; }
