@@ -12,6 +12,7 @@
 """
 import datetime
 import glob
+import html as htmlmod
 import json
 import os
 import re
@@ -111,6 +112,14 @@ def render_brief_page(date_str, brief, rows, stats):
             '<section class="brief-section">\n<h3>%s</h3>\n<ul>\n%s\n</ul>\n</section>'
             % (sec["title"], items))
     key_points = "\n".join("<li>%s</li>" % kp for kp in brief["key_points"])
+    ref_links = brief.get("ref_links", [])[:10]  # 最多 10 条，只列主要的
+    if ref_links:
+        ref_html = "\n".join(
+            '<li><a href="%s" target="_blank" rel="noopener">%s</a></li>'
+            % (htmlmod.escape(l["url"], quote=True), htmlmod.escape(l["title"]))
+            for l in ref_links)
+    else:
+        ref_html = "<li>本期暂无外部参考链接，数据来源见下方说明。</li>"
 
     token_map = {
         "%%DATE%%": date_str,
@@ -129,6 +138,7 @@ def render_brief_page(date_str, brief, rows, stats):
         "%%KEY_POINTS%%": key_points,
         "%%SECTIONS%%": "\n\n".join(sections_html),
         "%%SOURCES%%": stats["sources"],
+        "%%REF_LINKS%%": ref_html,
         "%%CHART_JSON%%": chart_json(rows),
     }
     for tok, val in token_map.items():
