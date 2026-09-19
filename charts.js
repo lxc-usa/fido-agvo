@@ -5,20 +5,30 @@
 (function () {
   "use strict";
 
-  var THEME = {
-    grid: "#1c2740",
-    text: "#8b99b0",
-    price: "#5b8cff",
-    ma20: "#f0b90b",
-    ma50: "#16c784",
-    ma200: "#b07cff",
-    up: "#16c784",
-    down: "#ea3943",
-    last: "#e9eef6",
-    rsi: "#5b8cff",
-    rsiHot: "#ea3943",
-    rsiCool: "#16c784"
-  };
+  /* 图表颜色跟随 CSS 变量（浅色/深色主题自适应）；取不到时回退为深色值 */
+  function cssVar(name) {
+    if (typeof getComputedStyle !== "function") return "";
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return v ? v.trim() : "";
+  }
+  function themeColors() {
+    function pick(name, fallback) { var v = cssVar(name); return v || fallback; }
+    return {
+      grid: pick("--chart-grid", "#1c2740"),
+      text: pick("--chart-text", "#8b99b0"),
+      price: pick("--chart-price", "#5b8cff"),
+      ma20: pick("--chart-ma20", "#f0b90b"),
+      ma50: pick("--chart-ma50", "#16c784"),
+      ma200: pick("--chart-ma200", "#b07cff"),
+      up: pick("--chart-up", "#16c784"),
+      down: pick("--chart-down", "#ea3943"),
+      last: pick("--chart-last", "#e9eef6"),
+      rsi: pick("--chart-rsi", "#5b8cff"),
+      rsiHot: pick("--chart-rsi-hot", "#ea3943"),
+      rsiCool: pick("--chart-rsi-cool", "#16c784"),
+      cross: pick("--chart-cross", "rgba(233,238,246,0.35)")
+    };
+  }
 
   var PRICE_WIN = 130;  // 主图显示最近约 6 个月交易日
   var SPARK_WIN = 66;   // 首页迷你线约 3 个月
@@ -88,11 +98,11 @@
     ctx.textBaseline = "middle";
   }
 
-  function crosshair(ctx, box, hl) {
+  function crosshair(ctx, box, hl, color) {
     if (hl < 0) return;
     var x = box.padL + box.iw * (box.m === 1 ? 0.5 : hl / (box.m - 1));
     ctx.save();
-    ctx.strokeStyle = "rgba(233,238,246,0.35)";
+    ctx.strokeStyle = color || "rgba(128,128,128,0.35)";
     ctx.lineWidth = 1;
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
@@ -138,6 +148,7 @@
 
   /* ═══════════ 主图：收盘价 + MA20/50/200 ═══════════ */
   function priceChart(canvas, D, hl) {
+    var THEME = themeColors();
     var f = fit(canvas); if (!f) return;
     var ctx = f.ctx, W = f.w, H = f.h;
     var n = D.close.length, s = Math.max(0, n - PRICE_WIN);
@@ -184,7 +195,7 @@
     ctx.fillText(last.toFixed(2), W - padR + 6, Y(last) - 9);
 
     var box = { padL: padL, padT: padT, iw: iw, ih: ih, m: m, w: W };
-    crosshair(ctx, box, hl == null ? -1 : hl);
+    crosshair(ctx, box, hl == null ? -1 : hl, THEME.cross);
     canvas._chartBox = box;
     canvas._chartRedraw = function (h) { priceChart(canvas, D, h); };
     canvas._chartTipHtml = function (idx) {
@@ -206,6 +217,7 @@
 
   /* ═══════════ 副图：成交量 ═══════════ */
   function volumeChart(canvas, D, hl) {
+    var THEME = themeColors();
     var f = fit(canvas); if (!f) return;
     var ctx = f.ctx, W = f.w, H = f.h;
     var n = D.close.length, s = Math.max(0, n - PRICE_WIN);
@@ -231,7 +243,7 @@
     var step = Math.max(1, Math.ceil(m / 6));
     for (i = 0; i < m; i += step) ctx.fillText(fmtDate(dates[i]), X(i) - 15, H - 9);
     var box = { padL: padL, padT: padT, iw: iw, ih: ih, m: m, w: W };
-    crosshair(ctx, box, hl == null ? -1 : hl);
+    crosshair(ctx, box, hl == null ? -1 : hl, THEME.cross);
     canvas._chartBox = box;
     canvas._chartRedraw = function (h) { volumeChart(canvas, D, h); };
     canvas._chartTipHtml = function (idx) {
@@ -244,6 +256,7 @@
 
   /* ═══════════ 副图：RSI(14) ═══════════ */
   function rsiChart(canvas, D, hl) {
+    var THEME = themeColors();
     var f = fit(canvas); if (!f) return;
     var ctx = f.ctx, W = f.w, H = f.h;
     var n = D.rsi.length, s = Math.max(0, n - PRICE_WIN);
@@ -275,7 +288,7 @@
     var step = Math.max(1, Math.ceil(m / 6));
     for (i = 0; i < m; i += step) ctx.fillText(fmtDate(dates[i]), X(i) - 15, H - 9);
     var box = { padL: padL, padT: padT, iw: iw, ih: ih, m: m, w: W };
-    crosshair(ctx, box, hl == null ? -1 : hl);
+    crosshair(ctx, box, hl == null ? -1 : hl, THEME.cross);
     canvas._chartBox = box;
     canvas._chartRedraw = function (h) { rsiChart(canvas, D, h); };
     canvas._chartTipHtml = function (idx) {
@@ -288,6 +301,7 @@
 
   /* ═══════════ 首页迷你线 ═══════════ */
   function sparkline(canvas) {
+    var THEME = themeColors();
     var data = getData(canvas, "data-spark");
     var f = fit(canvas); if (!f || !data) return;
     var ctx = f.ctx, W = f.w, H = f.h;
@@ -336,6 +350,11 @@
     document.querySelectorAll("canvas[data-spark]").forEach(function (cv) {
       var draw = function () { sparkline(cv); };
       redrawFns.push(draw); draw();
+    });
+
+    /* 配色切换（theme.js 触发）时用新主题颜色重绘所有图表 */
+    document.addEventListener("avgo-theme-change", function () {
+      redrawFns.forEach(function (fn) { fn(); });
     });
 
     var t = null;
