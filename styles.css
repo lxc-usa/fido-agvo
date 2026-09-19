@@ -369,6 +369,10 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; b
 .chart-figure .fig-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
 .chart-figure svg { width: 100%; height: auto; display: block; }
 .chart-figure.narrow svg { max-width: 340px; margin: 0 auto; }
+
+/* Fido 观点标注 */
+.fido-note { border-left: 3px solid var(--rin-pink); padding: 0.5em 0.9em; margin: 0.7em 0; background: var(--card-hover); border-radius: 0 8px 8px 0; font-size: 0.92rem; }
+.fido-note strong { color: var(--rin-pink); }
 .article-meta { color: var(--muted, #8a94a6); font-size: 0.85rem; margin-top: 0.4em; }
 .article-meta a { color: inherit; }
 .qa { border-left: 3px solid var(--border); padding: 0.2em 0 0.2em 1em; margin: 1em 0; }
