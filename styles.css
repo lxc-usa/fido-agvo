@@ -180,6 +180,7 @@ section { margin-bottom: 36px; }
   border: 1px solid var(--border); border-radius: 8px;
   padding: 8px 12px; font-size: 0.9rem;
 }
+#archive-filter::placeholder { color: var(--muted); }
 #archive-clear {
   background: transparent; color: var(--muted); cursor: pointer;
   border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px;
