@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVGO 日报 %%DATE%% | AVGO 每日追踪</title>
+<meta name="description" content="Broadcom (AVGO) %%DATE%% 每日投资简报：行情图表、基本面、分析师评级、技术面、期权情绪。">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header class="site-header">
+<div class="wrap">
+<div class="brand">
+<span class="ticker-badge">AVGO</span>
+<div>
+<h1>AVGO 每日追踪</h1>
+<p class="subtitle">每日更新的 Broadcom (NASDAQ: AVGO) 中文投资资讯站</p>
+</div>
+</div>
+<nav class="nav">
+<a href="../index.html">← 返回首页</a>
+</nav>
+</div>
+</header>
+
+<main class="wrap">
+
+<a class="back-link" href="../index.html">← 返回首页 / 历史归档</a>
+
+<div class="brief-hero">
+<h2>AVGO 每日投资简报</h2>
+<p class="cutoff">简报日期：%%DATE%%（%%WEEKDAY%%）· 数据截至 %%CUTOFF%% 美股收盘</p>
+<div class="price-row">
+<div class="price num">$%%PRICE%%</div>
+<div class="change %%CHANGE_CLASS%%">%%CHANGE_PCT%%</div>
+</div>
+<div class="stat-grid">
+<div class="stat"><div class="label">20 日均线</div><div class="value num neutral">$%%MA20%%</div></div>
+<div class="stat"><div class="label">50 日均线</div><div class="value num neutral">$%%MA50%%</div></div>
+<div class="stat"><div class="label">200 日均线</div><div class="value num neutral">$%%MA200%%</div></div>
+<div class="stat"><div class="label">RSI(14)</div><div class="value num neutral">%%RSI%%</div></div>
+<div class="stat"><div class="label">分析师评级</div><div class="value %%RATING_CLASS%%">%%RATING%%</div></div>
+<div class="stat"><div class="label">平均目标价</div><div class="value num up">%%TARGET%%</div></div>
+</div>
+</div>
+
+<section class="brief-section">
+<h3>📈 行情图表</h3>
+<div class="chart-block">
+<div class="chart-title">价格走势与均线（近 6 个月）</div>
+<div class="chart-sub">日线 · 复权价 · 点击/触摸图表可查看每日数值</div>
+<div class="chart-legend">
+<span><i class="lg" style="background:#5b8cff"></i>收盘价</span>
+<span><i class="lg" style="background:#f0b90b"></i>MA20</span>
+<span><i class="lg" style="background:#16c784"></i>MA50</span>
+<span><i class="lg" style="background:#b07cff"></i>MA200</span>
+</div>
+<div class="chart-wrap"><canvas class="chart" data-price="avgo-data-%%DATE%%"></canvas></div>
+</div>
+<div class="chart-block">
+<div class="chart-title">成交量</div>
+<div class="chart-wrap"><canvas class="chart sm" data-volume="avgo-data-%%DATE%%"></canvas></div>
+</div>
+<div class="chart-block">
+<div class="chart-title">RSI(14) 动量</div>
+<div class="chart-sub">70 上方为超买区，30 下方为超卖区</div>
+<div class="chart-wrap"><canvas class="chart sm" data-rsi="avgo-data-%%DATE%%"></canvas></div>
+</div>
+<script type="application/json" id="avgo-data-%%DATE%%">%%CHART_JSON%%</script>
+</section>
+
+%%SECTIONS%%
+
+<div class="sources">
+<strong>数据来源与时间：</strong>%%SOURCES%%
+</div>
+
+<div class="disclaimer">
+⚠️ 免责声明：本站所有内容仅供信息参考，不构成投资建议。市场有风险，投资需谨慎。请在做出任何投资决策前自行核实数据并咨询专业顾问。
+</div>
+
+<a class="back-link" href="../index.html">← 返回首页 / 历史归档</a>
+
+</main>
+
+<footer class="site-footer">
+<div class="wrap">
+<p>本站内容仅供信息参考，不构成投资建议。市场有风险，投资需谨慎。</p>
+<p>AVGO 每日追踪 · 数据来源于公开市场信息</p>
+</div>
+</footer>
+
+<script src="../charts.js"></script>
+</body>
+</html>
