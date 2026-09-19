@@ -360,6 +360,15 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; b
 .data-table thead th { background: var(--card-hover); font-weight: 700; }
 .data-table tbody tr:last-child th, .data-table tbody tr:last-child td { border-bottom: none; }
 .data-table .src-note { font-size: 0.78rem; opacity: 0.75; }
+
+/* 内联数据图表（迁移自原文 SVG） */
+.chart-figure { border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin: 0.9em 0 1.2em; background: var(--card); }
+.chart-figure .fig-title { font-size: 14px; font-weight: 700; }
+.chart-figure .fig-sub { font-size: 12px; opacity: 0.7; margin: 2px 0 8px; }
+.chart-figure .fig-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; opacity: 0.85; margin-bottom: 8px; }
+.chart-figure .fig-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
+.chart-figure svg { width: 100%; height: auto; display: block; }
+.chart-figure.narrow svg { max-width: 340px; margin: 0 auto; }
 .article-meta { color: var(--muted, #8a94a6); font-size: 0.85rem; margin-top: 0.4em; }
 .article-meta a { color: inherit; }
 .qa { border-left: 3px solid var(--border); padding: 0.2em 0 0.2em 1em; margin: 1em 0; }
