@@ -109,13 +109,9 @@ a:hover { text-decoration: underline; }
   padding-top: 14px; padding-bottom: 14px; gap: 12px;
 }
 .brand { display: flex; align-items: center; gap: 14px; }
-.ticker-badge {
-  font-family: var(--mono); font-weight: 800; font-size: 1.1rem;
-  background: linear-gradient(135deg, var(--accent), #7a5cff);
-  color: #fff; border-radius: 10px; padding: 8px 12px; letter-spacing: 1px;
-  box-shadow: 0 4px 18px rgba(79, 124, 255, 0.35);
-  white-space: nowrap;
-}
+/* 博通官方标识（broadcom.com）：红色脉冲 symbol，透明底，深浅主题通用 */
+.brand-logo-link { display: inline-flex; line-height: 0; flex: 0 0 auto; }
+.brand-logo { height: 34px; width: auto; display: block; }
 .brand h1 { font-size: 1.35rem; line-height: 1.3; letter-spacing: 2px; }
 .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
 .nav { display: flex; gap: 18px; font-size: 0.9rem; white-space: nowrap; }
@@ -345,7 +341,7 @@ canvas.sparkline { width: 100%; height: 54px; display: block; }
   /* 顶栏：小屏幕第一行只放品牌 + 汉堡按钮，导航折叠为下拉菜单 */
   .site-header .wrap { flex-wrap: wrap; row-gap: 0; padding-top: 10px; padding-bottom: 10px; }
   .brand { gap: 10px; min-width: 0; flex: 1 1 auto; }
-  .ticker-badge { font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; }
+  .brand-logo { height: 30px; }
   .brand h1 { font-size: 1.05rem; letter-spacing: 1px; white-space: nowrap; }
   .subtitle { display: none; }
   .menu-toggle {
