@@ -1,5 +1,49 @@
-/* AVGO 每日追踪 — 深色金融风格样式表（零依赖） */
+/* AVGO 每日追踪 — 浅色/深色自适应样式表（零依赖）
+ * 默认浅色；深色通过 <html data-theme="dark"> 生效；
+ * “系统配色”模式由 theme.js 在加载时按 prefers-color-scheme 解析为 light/dark。
+ */
 :root {
+  color-scheme: light;
+  --scheme: light;
+  --bg: #f3f6fb;
+  --bg-soft: #e9eef7;
+  --card: #ffffff;
+  --card-hover: #eef3fb;
+  --border: #d9e2f1;
+  --text: #1d2433;
+  --muted: #5e6b85;
+  --faint: #98a4bc;
+  --green: #0a9b66;
+  --red: #d3313b;
+  --accent: #2f5fe0;
+  --gold: #9c7400;
+  --list-text: #3a4560;
+  --stat-bg: rgba(47, 95, 224, 0.05);
+  --tip-bg: rgba(255, 255, 255, 0.97);
+  --tip-border: #c7d3e8;
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --glow: #dbe6fa;
+  --disclaimer-text: #a83a41;
+  --chart-grid: #e1e8f4;
+  --chart-text: #5e6b85;
+  --chart-price: #2f5fe0;
+  --chart-ma20: #9c7400;
+  --chart-ma50: #0a9b66;
+  --chart-ma200: #7a5cff;
+  --chart-up: #0a9b66;
+  --chart-down: #d3313b;
+  --chart-last: #1d2433;
+  --chart-rsi: #2f5fe0;
+  --chart-rsi-hot: #d3313b;
+  --chart-rsi-cool: #0a9b66;
+  --chart-cross: rgba(29, 36, 51, 0.3);
+  --radius: 12px;
+  --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --scheme: dark;
   --bg: #0a0e15;
   --bg-soft: #0e1420;
   --card: #121a29;
@@ -12,8 +56,26 @@
   --red: #ea3943;
   --accent: #4f7cff;
   --gold: #f0b90b;
-  --radius: 12px;
-  --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --list-text: #cfd8e6;
+  --stat-bg: rgba(255, 255, 255, 0.03);
+  --tip-bg: rgba(14, 20, 32, 0.96);
+  --tip-border: #2a3a58;
+  --header-bg: rgba(10, 14, 21, 0.85);
+  --glow: #12203a;
+  --disclaimer-text: #d8a0a3;
+  --chart-grid: #1c2740;
+  --chart-text: #8b99b0;
+  --chart-price: #5b8cff;
+  --chart-ma20: #f0b90b;
+  --chart-ma50: #16c784;
+  --chart-ma200: #b07cff;
+  --chart-up: #16c784;
+  --chart-down: #ea3943;
+  --chart-last: #e9eef6;
+  --chart-rsi: #5b8cff;
+  --chart-rsi-hot: #ea3943;
+  --chart-rsi-cool: #16c784;
+  --chart-cross: rgba(233, 238, 246, 0.35);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,7 +83,7 @@
 html { -webkit-text-size-adjust: 100%; }
 
 body {
-  background: radial-gradient(1200px 500px at 50% -10%, #12203a 0%, var(--bg) 55%) fixed,
+  background: radial-gradient(1200px 500px at 50% -10%, var(--glow) 0%, var(--bg) 55%) fixed,
               var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
@@ -38,7 +100,7 @@ a:hover { text-decoration: underline; }
 /* ---------- 头部 ---------- */
 .site-header {
   border-bottom: 1px solid var(--border);
-  background: rgba(10, 14, 21, 0.85);
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 10;
 }
@@ -95,7 +157,7 @@ section { margin-bottom: 36px; }
 .key-points { list-style: none; margin: 12px 0 18px; }
 .key-points li {
   padding: 7px 0 7px 22px; position: relative;
-  color: #cfd8e6; font-size: 0.95rem; border-bottom: 1px dashed var(--border);
+  color: var(--list-text); font-size: 0.95rem; border-bottom: 1px dashed var(--border);
 }
 .key-points li:last-child { border-bottom: none; }
 .key-points li::before {
@@ -114,7 +176,7 @@ section { margin-bottom: 36px; }
 #archive-filter {
   background: var(--bg-soft); color: var(--text);
   border: 1px solid var(--border); border-radius: 8px;
-  padding: 8px 12px; font-size: 0.9rem; color-scheme: dark;
+  padding: 8px 12px; font-size: 0.9rem;
 }
 #archive-clear {
   background: transparent; color: var(--muted); cursor: pointer;
@@ -136,7 +198,7 @@ section { margin-bottom: 36px; }
   border: 1px solid rgba(240, 185, 11, 0.35); border-radius: 8px;
   padding: 4px 10px; white-space: nowrap; background: rgba(240, 185, 11, 0.07);
 }
-.archive-title { flex: 1; font-size: 0.95rem; color: #cfd8e6; }
+.archive-title { flex: 1; font-size: 0.95rem; color: var(--list-text); }
 .archive-arrow { color: var(--faint); font-size: 1.2rem; }
 .empty { color: var(--muted); text-align: center; padding: 30px 0; }
 
@@ -156,7 +218,7 @@ section { margin-bottom: 36px; }
   gap: 10px; margin-top: 14px;
 }
 .stat {
-  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+  background: var(--stat-bg); border: 1px solid var(--border);
   border-radius: 10px; padding: 10px 12px;
 }
 .stat .label { font-size: 0.75rem; color: var(--muted); }
@@ -176,7 +238,7 @@ section { margin-bottom: 36px; }
 .brief-section ul { list-style: none; }
 .brief-section li {
   padding: 6px 0 6px 20px; position: relative;
-  color: #cfd8e6; font-size: 0.94rem;
+  color: var(--list-text); font-size: 0.94rem;
 }
 .brief-section li::before { content: "•"; position: absolute; left: 4px;
   color: var(--accent); font-weight: 800; }
@@ -198,7 +260,7 @@ section { margin-bottom: 36px; }
 .disclaimer {
   background: rgba(234, 57, 67, 0.06); border: 1px solid rgba(234, 57, 67, 0.25);
   border-radius: var(--radius); padding: 14px 18px;
-  font-size: 0.85rem; color: #d8a0a3; margin-bottom: 20px;
+  font-size: 0.85rem; color: var(--disclaimer-text); margin-bottom: 20px;
 }
 
 /* ---------- 图表 ---------- */
@@ -220,7 +282,7 @@ canvas.sparkline { width: 100%; height: 54px; display: block; }
 .spark-wrap { margin: 2px 0 10px; }
 .chart-tip {
   position: absolute; pointer-events: none; z-index: 5;
-  background: rgba(14, 20, 32, 0.96); border: 1px solid #2a3a58;
+  background: var(--tip-bg); border: 1px solid var(--tip-border);
   border-radius: 8px; padding: 8px 11px;
   font-size: 0.75rem; line-height: 1.6; color: var(--text);
   white-space: nowrap; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
@@ -236,6 +298,25 @@ canvas.sparkline { width: 100%; height: 54px; display: block; }
   color: var(--faint); font-size: 0.8rem; text-align: center;
 }
 .site-footer p { margin: 4px 0; }
+
+/* ---------- 配色开关 ---------- */
+.theme-switch {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-top: 14px; flex-wrap: wrap;
+}
+.theme-label { color: var(--faint); font-size: 0.78rem; margin-right: 2px; }
+.theme-btn {
+  font-family: inherit; font-size: 0.8rem;
+  background: var(--bg-soft); color: var(--muted);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 14px; cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.theme-btn:hover { color: var(--text); border-color: var(--faint); }
+.theme-btn.active {
+  background: var(--accent); border-color: var(--accent);
+  color: #fff; font-weight: 600;
+}
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 640px) {
