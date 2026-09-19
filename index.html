@@ -19,7 +19,11 @@
         <p class="subtitle">每日更新的 Broadcom (NASDAQ: AVGO) 中文投资资讯站</p>
       </div>
     </div>
-    <nav class="nav">
+    <button class="menu-toggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="site-nav">
+    <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <nav class="nav" id="site-nav">
       <a href="#latest">最新简报</a>
       <a href="#articles">深度文章</a>
       <a href="#archive">历史归档</a>
@@ -103,6 +107,7 @@
 
 <script src="script.js"></script>
 <script src="theme.js"></script>
+<script src="menu.js"></script>
 <script src="charts.js"></script>
 </body>
 </html>
