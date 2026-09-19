@@ -6,6 +6,10 @@
   var empty = document.getElementById("archive-empty");
   if (!input || !list) return;
 
+  /* 日期框占位提示：平时显示"请选择日期"，聚焦后切换为原生日期选择器 */
+  input.addEventListener("focus", function () { input.type = "date"; });
+  input.addEventListener("blur", function () { if (!input.value) input.type = "text"; });
+
   function applyFilter() {
     var q = (input.value || "").trim();
     var visible = 0;
