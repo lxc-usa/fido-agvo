@@ -103,7 +103,10 @@ a:hover { text-decoration: underline; }
   background: var(--header-bg);
   backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 10;
+  transition: transform 0.28s ease;
 }
+/* 往下滚动时隐藏顶栏（JS 切换），往上滚自动回来 */
+.site-header.header-hidden { transform: translateY(-100%); }
 .site-header .wrap {
   display: flex; align-items: center; justify-content: space-between;
   padding-top: 14px; padding-bottom: 14px; gap: 12px;
