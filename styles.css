@@ -201,6 +201,35 @@ section { margin-bottom: 36px; }
   font-size: 0.85rem; color: #d8a0a3; margin-bottom: 20px;
 }
 
+/* ---------- 图表 ---------- */
+.chart-block { margin: 4px 0 18px; }
+.chart-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin: 16px 0 2px; }
+.chart-sub { font-size: 0.75rem; color: var(--faint); margin-bottom: 4px; }
+.chart-legend {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 0.75rem; color: var(--muted); margin: 2px 0 6px;
+}
+.chart-legend .lg {
+  display: inline-block; width: 14px; height: 3px; border-radius: 2px;
+  margin-right: 6px; vertical-align: middle;
+}
+.chart-wrap { position: relative; }
+canvas.chart { width: 100%; height: 300px; display: block; touch-action: pan-y; cursor: crosshair; }
+canvas.chart.sm { height: 170px; }
+canvas.sparkline { width: 100%; height: 54px; display: block; }
+.spark-wrap { margin: 2px 0 10px; }
+.chart-tip {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: rgba(14, 20, 32, 0.96); border: 1px solid #2a3a58;
+  border-radius: 8px; padding: 8px 11px;
+  font-size: 0.75rem; line-height: 1.6; color: var(--text);
+  white-space: nowrap; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+.chart-tip .tt-date { color: var(--gold); font-family: var(--mono); font-size: 0.72rem; }
+.chart-tip b { font-family: var(--mono); }
+.chart-tip .t-up { color: var(--green); font-family: var(--mono); }
+.chart-tip .t-down { color: var(--red); font-family: var(--mono); }
+
 /* ---------- 页脚 ---------- */
 .site-footer {
   border-top: 1px solid var(--border); padding: 22px 0 30px;
@@ -218,4 +247,6 @@ section { margin-bottom: 36px; }
   .archive-card { flex-wrap: wrap; }
   .archive-arrow { display: none; }
   .section-head h2 { font-size: 1rem; }
+  canvas.chart { height: 240px; }
+  canvas.chart.sm { height: 150px; }
 }
