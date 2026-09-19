@@ -6,6 +6,7 @@
 <title>AVGO 日报 %%DATE%% | AVGO 每日追踪</title>
 <meta name="description" content="Broadcom (AVGO) %%DATE%% 每日投资简报：行情图表、基本面、分析师评级、技术面、期权情绪。">
 <link rel="stylesheet" href="../styles.css">
+<script>(function(){try{var m=localStorage.getItem("avgo-theme")||"system";var t=(m==="dark"||m==="light")?m:((window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");document.documentElement.setAttribute("data-theme",t);document.documentElement.setAttribute("data-theme-mode",m);}catch(e){}})();</script>
 </head>
 <body>
 
@@ -88,9 +89,16 @@
 <div class="wrap">
 <p>本站内容仅供信息参考，不构成投资建议。市场有风险，投资需谨慎。</p>
 <p>AVGO 每日追踪 · 数据来源于公开市场信息</p>
+<div class="theme-switch" role="group" aria-label="配色模式">
+<span class="theme-label">配色</span>
+<button type="button" class="theme-btn" data-theme-btn="light">浅色</button>
+<button type="button" class="theme-btn" data-theme-btn="dark">深色</button>
+<button type="button" class="theme-btn" data-theme-btn="system">系统配色</button>
+</div>
 </div>
 </footer>
 
+<script src="../theme.js"></script>
 <script src="../charts.js"></script>
 </body>
 </html>
