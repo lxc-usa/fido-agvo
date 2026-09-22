@@ -4,8 +4,7 @@
 用法:
     python3 build_brief.py 2026-09-19
 
-读取 tools/input/<date>.json（编辑性内容：要点、栏目、来源等），从 Nasdaq 官方 API
-拉取 AVGO 日线数据并计算均线/RSI，然后：
+读取 tools/input/<date>.json（编辑性内容：要点、栏目、来源等），拉取 AVGO 日线数据（Nasdaq 官方历史接口打底，CNBC 实时行情补最新一根 K 线），然后：
   1. 生成 briefs/<date>.html（含价格+均线/成交量/RSI 图表，Canvas 零依赖渲染）
   2. 更新 index.html 的"最新一期"区块（含迷你走势线）与历史归档列表
   3. 生成 charts/avgo-<date>.png（供聊天简报配图），并清理 14 天前的旧图
@@ -28,7 +27,9 @@ WEEKDAYS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"
 
 
 def fetch_daily():
-    # Nasdaq 官方历史行情 API（免 key），返回倒序日线，解析后按日期正序排列
+    # 日线主体：Nasdaq 官方历史行情 API（免 key），返回倒序日线，解析后按日期正序排列。
+    # 最新一根 K 线：Nasdaq 历史接口要美东过夜才更新，用 CNBC 实时行情接口补上
+    # 当日（上一交易日）OHLCV，保证横幅价格与正文最新收盘一致。CNBC 失败则回退为纯日线。
     url = ("https://api.nasdaq.com/api/quote/AVGO/historical"
            "?assetclass=stocks&fromdate=2024-01-01&limit=9999")
     headers = dict(UA)
@@ -64,6 +65,25 @@ def fetch_daily():
     rows.sort(key=lambda r: r["date"])
     if not rows:
         raise RuntimeError("Nasdaq 未返回 AVGO 日线数据")
+
+    # 补最新一根 K 线
+    try:
+        qurl = ("https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol"
+                "?symbols=AVGO&requestMethod=quick&noform=1&partnerId=2&fund=1&exthrs=1&output=json")
+        qreq = urllib.request.Request(qurl, headers=UA)
+        with urllib.request.urlopen(qreq, timeout=30) as qresp:
+            q = json.loads(qresp.read().decode())["FormattedQuoteResult"]["FormattedQuote"][0]
+        qm = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})T.*", (q.get("last_time") or "").strip())
+        qbar = {
+            "date": "%s-%s-%s" % (qm.group(1), qm.group(2), qm.group(3)),
+            "open": num(q.get("open")), "high": num(q.get("high")),
+            "low": num(q.get("low")), "close": num(q.get("last")),
+            "volume": int(num(q.get("volume")) or 0),
+        }
+        if qm and qbar["close"] and qbar["date"] > rows[-1]["date"]:
+            rows.append(qbar)
+    except Exception:
+        pass
     return rows
 
 
@@ -305,7 +325,7 @@ def main():
         "rsi": "%.1f" % last["rsi"],
         "range20": "%.2f – %.2f" % (lo20, hi20),
         "volume": last["volume"],
-        "sources": ("行情、均线与 RSI 基于 Nasdaq 官方 AVGO 日线数据计算，"
+        "sources": ("行情、均线与 RSI 基于 Nasdaq 官方日线与 CNBC 最新行情计算，"
                     "数据截至 %s 美股收盘；" % last["date"]) + brief.get("sources_extra", ""),
     }
     print("最新: %s 收盘 $%s (%s), MA20 %s, RSI %s" % (
