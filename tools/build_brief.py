@@ -4,7 +4,7 @@
 用法:
     python3 build_brief.py 2026-09-19
 
-读取 tools/input/<date>.json（编辑性内容：要点、栏目、来源等），从 Yahoo Finance
+读取 tools/input/<date>.json（编辑性内容：要点、栏目、来源等），从 Nasdaq 官方 API
 拉取 AVGO 日线数据并计算均线/RSI，然后：
   1. 生成 briefs/<date>.html（含价格+均线/成交量/RSI 图表，Canvas 零依赖渲染）
   2. 更新 index.html 的"最新一期"区块（含迷你走势线）与历史归档列表
@@ -28,25 +28,42 @@ WEEKDAYS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"
 
 
 def fetch_daily():
-    url = "https://query1.finance.yahoo.com/v8/finance/chart/AVGO?interval=1d&range=1y"
-    req = urllib.request.Request(url, headers=UA)
+    # Nasdaq 官方历史行情 API（免 key），返回倒序日线，解析后按日期正序排列
+    url = ("https://api.nasdaq.com/api/quote/AVGO/historical"
+           "?assetclass=stocks&fromdate=2024-01-01&limit=9999")
+    headers = dict(UA)
+    headers["Accept"] = "application/json"
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=30) as resp:
         payload = json.loads(resp.read().decode())
-    r = payload["chart"]["result"][0]
-    ts = r["timestamp"]
-    q = r["indicators"]["quote"][0]
-    adj = r["indicators"].get("adjclose", [{}])[0].get("adjclose") or []
+    rows_raw = payload["data"]["tradesTable"]["rows"]
+
+    def num(v):
+        if not v or v == "N/A":
+            return None
+        try:
+            return float(str(v).replace("$", "").replace(",", ""))
+        except (TypeError, ValueError):
+            return None
+
     rows = []
-    for i, t in enumerate(ts):
-        dt = datetime.datetime.fromtimestamp(t, datetime.timezone.utc).date().isoformat()
-        px = adj[i] if i < len(adj) and adj[i] else q["close"][i]
+    for r in rows_raw:
+        px = num(r.get("close"))
         if px is None:
             continue
+        m = re.fullmatch(r"(\d{2})/(\d{2})/(\d{4})", (r.get("date") or "").strip())
+        if not m:
+            continue
+        vol = num(r.get("volume"))
         rows.append({
-            "date": dt,
-            "open": q["open"][i], "high": q["high"][i],
-            "low": q["low"][i], "close": px, "volume": q["volume"][i],
+            "date": "%s-%s-%s" % (m.group(3), m.group(1), m.group(2)),
+            "open": num(r.get("open")), "high": num(r.get("high")),
+            "low": num(r.get("low")), "close": px,
+            "volume": int(vol) if vol else 0,
         })
+    rows.sort(key=lambda r: r["date"])
+    if not rows:
+        raise RuntimeError("Nasdaq 未返回 AVGO 日线数据")
     return rows
 
 
@@ -288,7 +305,7 @@ def main():
         "rsi": "%.1f" % last["rsi"],
         "range20": "%.2f – %.2f" % (lo20, hi20),
         "volume": last["volume"],
-        "sources": ("行情、均线与 RSI 基于 Yahoo Finance AVGO 日线数据（复权价）计算，"
+        "sources": ("行情、均线与 RSI 基于 Nasdaq 官方 AVGO 日线数据计算，"
                     "数据截至 %s 美股收盘；" % last["date"]) + brief.get("sources_extra", ""),
     }
     print("最新: %s 收盘 $%s (%s), MA20 %s, RSI %s" % (
