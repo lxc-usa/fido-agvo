@@ -255,6 +255,30 @@ section { margin-bottom: 36px; }
 .tag.bear { color: var(--red); background: rgba(234, 57, 67, 0.12); }
 .tag.flat { color: var(--gold); background: rgba(240, 185, 11, 0.1); }
 
+/* 栏目锚点导航（修6） */
+.section-nav {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px;
+}
+.section-nav a {
+  font-size: 0.82rem; color: var(--muted); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 14px;
+  background: var(--card); transition: color .15s, border-color .15s;
+}
+.section-nav a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* 折叠补充区（修4 分析师其他口径 / 修5 社交更多平台） */
+.brief-section details.more {
+  margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px;
+}
+.brief-section details.more summary {
+  cursor: pointer; font-size: 0.85rem; color: var(--accent);
+  list-style: none; display: inline-block; padding: 2px 0;
+}
+.brief-section details.more summary::-webkit-details-marker { display: none; }
+.brief-section details.more summary::before { content: "▸ "; }
+.brief-section details.more[open] summary::before { content: "▾ "; }
+.brief-section details.more ul { margin-top: 6px; }
+
 .sources {
   border: 1px dashed var(--border); border-radius: var(--radius);
   padding: 16px 20px; margin: 22px 0 10px; font-size: 0.82rem; color: var(--muted);
