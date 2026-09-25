@@ -142,12 +142,45 @@ def render_brief_page(date_str, brief, rows, stats):
     with open(os.path.join(TOOLS, "brief_template.html"), encoding="utf-8") as f:
         tpl = f.read()
 
+    # 编辑性文本（sections/items）同样支持 %%TOKEN%%，均线/价格/RSI 一律由脚本注入，
+    # 禁止在 input JSON 里手写这些数字。可用 token：
+    # %%PRICE%% %%CHANGE_PCT%% %%MA20%% %%MA50%% %%MA200%% %%RSI%%
+    stat_tokens = {
+        "%%PRICE%%": stats["price"],
+        "%%CHANGE_PCT%%": stats["change_pct"],
+        "%%MA20%%": stats["ma20"],
+        "%%MA50%%": stats["ma50"],
+        "%%MA200%%": stats["ma200"],
+        "%%RSI%%": stats["rsi"],
+    }
+
+    # 各栏目锚点 id（供顶部导航跳转）
+    section_anchors = {
+        "📰 行情速览": "market",
+        "🏢 基本面": "fundamentals",
+        "🎯 分析师评级": "ratings",
+        "📊 技术面": "technical",
+        "💬 社交平台头条": "social",
+        "👀 今日关注": "focus",
+    }
+    nav_items = []
     sections_html = []
     for sec in brief["sections"]:
-        items = "\n".join("<li>%s</li>" % it for it in sec["items"])
-        sections_html.append(
-            '<section class="brief-section">\n<h3>%s</h3>\n<ul>\n%s\n</ul>\n</section>'
-            % (sec["title"], items))
+        items = []
+        for it in sec["items"]:
+            for tok, val in stat_tokens.items():
+                it = it.replace(tok, val)
+            items.append("<li>%s</li>" % it)
+        anchor = section_anchors.get(sec["title"], "")
+        if anchor:
+            nav_items.append('<a href="#%s">%s</a>' % (anchor, sec["title"]))
+            sections_html.append(
+                '<section class="brief-section" id="%s">\n<h3>%s</h3>\n<ul>\n%s\n</ul>\n</section>'
+                % (anchor, sec["title"], "\n".join(items)))
+        else:
+            sections_html.append(
+                '<section class="brief-section">\n<h3>%s</h3>\n<ul>\n%s\n</ul>\n</section>'
+                % (sec["title"], "\n".join(items)))
     key_points = "\n".join("<li>%s</li>" % kp for kp in brief["key_points"])
     ref_links = brief.get("ref_links", [])[:10]  # 最多 10 条，只列主要的
     if ref_links:
@@ -174,6 +207,8 @@ def render_brief_page(date_str, brief, rows, stats):
         "%%TARGET%%": brief.get("target_avg", "未确认"),
         "%%KEY_POINTS%%": key_points,
         "%%SECTIONS%%": "\n\n".join(sections_html),
+        "%%SECTION_NAV%%": ('<nav class="section-nav">\n' + "\n".join(nav_items) + "\n</nav>"
+                           if nav_items else ""),
         "%%SOURCES%%": stats["sources"],
         "%%REF_LINKS%%": ref_html,
         "%%CHART_JSON%%": chart_json(rows),
@@ -184,6 +219,46 @@ def render_brief_page(date_str, brief, rows, stats):
     with open(out, "w", encoding="utf-8") as f:
         f.write(tpl)
     return out
+
+
+def validate_brief(html, stats):
+    """发布前数字一致性校验。
+
+    1. 不允许残留未替换的 %%TOKEN%%（token 拼写错误等）。
+    2. "均线/MA"附近（前后 30 字符）出现的美元金额，必须精确等于
+       MA20/MA50/MA200 其中之一——这是之前手写"$380"代替 $368.59 的翻车点。
+       开盘价、区间高低点、支撑阻力等其他数字不强制校验（由编辑负责）。
+    返回错误列表，为空表示通过。
+    """
+    errors = []
+    leftover = sorted(set(re.findall(r"%%[A-Z0-9_]+%%", html)))
+    if leftover:
+        errors.append("残留未替换 token: %s" % ", ".join(leftover))
+
+    ma_vals = {round(float(stats["ma20"]), 2),
+               round(float(stats["ma50"]), 2),
+               round(float(stats["ma200"]), 2)}
+    # 找"均线"或"MAxx"关键词位置
+    kw_pos = [m.start() for m in re.finditer(r"均线|MA\s?20|MA\s?50|MA\s?200", html)]
+    for m in re.finditer(r"\$(\d{1,4}(?:\.\d{1,2})?)", html):
+        val = round(float(m.group(1)), 2)
+        if val in ma_vals:
+            continue
+        # 是否在任一均线关键词附近
+        if any(abs(m.start() - kp) < 40 for kp in kw_pos):
+            errors.append(
+                "均线附近的金额 $%s 与计算值 %s 不一致（疑似手写硬编码）"
+                % (m.group(1), "/".join("$%.2f" % v for v in sorted(ma_vals))))
+            break
+
+    # RSI：正文若提到具体数值，必须与计算值一致（容差 0.2；70/30 为阈值线除外）
+    rsi_val = float(stats["rsi"])
+    for m in re.finditer(r"RSI(?:\(14\))?[^\d]{0,12}(\d{1,3}\.\d)", html):
+        v = float(m.group(1))
+        if abs(v - rsi_val) > 0.2 and v not in (70.0, 30.0):
+            errors.append(
+                "正文 RSI 数值 %.1f 与脚本计算值 %.1f 不一致" % (v, rsi_val))
+    return errors
 
 
 def update_index(date_str, brief, rows, stats):
@@ -333,6 +408,16 @@ def main():
 
     page = render_brief_page(date_str, brief, rows, stats)
     print("已生成:", page)
+
+    with open(page, encoding="utf-8") as f:
+        page_html = f.read()
+    problems = validate_brief(page_html, stats)
+    if problems:
+        print("数字一致性校验失败，终止发布：", file=sys.stderr)
+        for p in problems:
+            print("  - " + p, file=sys.stderr)
+        sys.exit(2)
+    print("数字一致性校验通过")
     update_index(date_str, brief, rows, stats)
     print("已更新: index.html")
     png = make_chat_png(date_str, rows)
